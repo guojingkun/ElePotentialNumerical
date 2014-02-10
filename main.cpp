@@ -93,7 +93,7 @@ void calculate(int td)    //To calculate the potential inside the space
 	cout << "L: " << LoopPorgressed << endl;
 }
 
-void commander()    //to determin whether the program can stop, and chane the omega used in SOR method
+void commander()    //to determin whether the program can stop, and change the omega used in SOR method
 {
 	printf("thread Commander begins\n");
 	int i, CountAccept = 0, c=0;
