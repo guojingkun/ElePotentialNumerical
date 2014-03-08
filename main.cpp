@@ -65,18 +65,20 @@ void calculate(int td)    //To calculate the potential inside the space
 	while(run)
 	{
 		err = 0;
+		i = Head+1;
+		
 		for(i = Head; i <= Tail; i++)
 		{
 			for(j = 0; j < Ny; j++)
 			{
-				for(k = 0; k < Nz; k++)
+				for(k = 1; k < Nz; k++)
 				{
 					if(Point[i][j][k].potentialFix)
 						continue;
 					//SOR
 					residual = (Point[i+1][j][k].potential+Point[i-1][j][k].potential+Point[i][j+1][k].potential+Point[i][j-1][k].potential+Point[i][j][k+1].potential+Point[i][j][k-1].potential - 6*Point[i][j][k].potential);
 					Point[i][j][k].potential = Point[i][j][k].potential + omega / 6 * residual;
-					if(abs(residual) > err)    //an estimate of the error
+					if(abs(residual) > abs(err))    //an estimate of the error
 					{
 						err = abs(residual);
 					}
@@ -93,19 +95,16 @@ void calculate(int td)    //To calculate the potential inside the space
 	cout << "L: " << LoopPorgressed << endl;
 }
 
-void commander()    //to determin whether the program can stop, and change the omega used in SOR method
+void commander()    //to determin whether the program can stop, and chane the omega used in SOR method
 {
 	printf("thread Commander begins\n");
-	int i, CountAccept = 0, c=0;
-	double omegaTmp;
-	fstream omg("omega.txt",ios::out);
-	omg << omega << endl;
-	omg.close();
+
+	int i, CountAccept = 0;
 	double MaxError = 0;
-	while(CountAccept < 20)
+	omega = 2/(1+3.14159/Nx);
+	while(1)
 	{
 		sleep(15);
-		c++;
 		MaxError = 0;
 
 		for(i = 0; i < ThreadNum; i++)
@@ -118,20 +117,22 @@ void commander()    //to determin whether the program can stop, and change the o
 		for(i = 0; i < ThreadNum; i++)
 			cseg[i].err = 0;
 		m.unlock();
-		if(c%8==0)
-			printf("err: %e\n",MaxError);
-		//read omega from file, which means that I can change the omega manually
-		omg.open("omega.txt",ios::in);
-		omg >> omegaTmp;
-		omg.close();
-		if(omegaTmp >= 2 || omegaTmp<=0)
-			omegaTmp=2/(1+3.14159/Nx);
-		omega=omegaTmp;
+//		if(c%8==0)
+		printf("err: %e %e\n",MaxError, omega);
 
 		if(MaxError < MAXERR)    //converged
 		{
 			CountAccept++;
 			printf("CountAccept %d\n",CountAccept);
+			if(CountAccept > 14)
+			{
+				omega = 1;
+			}
+			if(CountAccept > 22)
+			{
+				printf("TER\n");
+				break;
+			}
 			continue;
 		}
 		CountAccept = 0;
