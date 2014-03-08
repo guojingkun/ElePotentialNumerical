@@ -1,10 +1,13 @@
 /*
  * guojk, leizj
- * circle
+ * Verification
+ * Surface of a sphere. The potential of it is 1V.
+ * R = 90um, r = 80um
  */
 
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include "Point.h"
 #include "mypara.h"
 using namespace std;
@@ -61,30 +64,25 @@ void BoundaryCondition(CPoint*** Point)
 	}
 
 	//inside
-	k = Nz/2;
-	//the inner circle
+	double dist;    //distance from the center
+	double r = 45e-6, R = 50e-6;
 	for(i = 0; i < Nx; i++)
 	{
 		for(j = 0; j < Ny; j++)
 		{
-			if( ((i-Nx/2.0)*delta)*((i-Nx/2.0)*delta) +  ((j-Ny/2.0)*delta)*((j-Ny/2.0)*delta) < (15e-6)*(15e-6))
+			for(k = 0; k < Nz; k++)
 			{
-				Point[i][j][k].potential = 0;
-				Point[i][j][k].potentialFix = 1;
-			}
-		}
-	}
-	//the outer ring
-	double tmpr;
-	for(i = 0; i < Nx; i++)
-	{
-		for(j = 0; j < Ny; j++)
-		{
-			tmpr = ((i-Nx/2.0)*delta)*((i-Nx/2.0)*delta) +  ((j-Ny/2.0)*delta)*((j-Ny/2.0)*delta);
-			if(tmpr < (25e-6)*(25e-6) && tmpr > (20e-6)*(20e-6))
-			{
-				Point[i][j][k].potential = 10;
-				Point[i][j][k].potentialFix = 1;
+				dist = pow((double)(pow(i-Nx/2.0,2) + pow(j-Ny/2.0,2) + pow(k-Nz/2.0,2)), 1/2.0)*delta;
+				if(dist < R && dist > r)
+				{
+					Point[i][j][k].potential = 1;
+					Point[i][j][k].potentialFix = 1;
+				}
+				else if(dist >= 899e-6)
+				{
+					Point[i][j][k].potential = 0;
+					Point[i][j][k].potentialFix = 1;
+				}
 			}
 		}
 	}
