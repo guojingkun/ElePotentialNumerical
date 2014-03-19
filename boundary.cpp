@@ -2,7 +2,7 @@
  * guojk, leizj
  * Verification
  * Surface of a sphere. The potential of it is 1V.
- * R = 90um, r = 80um
+ * R = 50um, r = 45um
  */
 
 #include <iostream>
