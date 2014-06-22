@@ -64,23 +64,18 @@ void BoundaryCondition(CPoint*** Point)
 	}
 
 	//inside
-	double dist;    //distance from the center
-	double r = 45e-6, R = 50e-6;
+	double dist;    //distance from the centre
+	double r = 25e-6, R = 30e-6;
 	for(i = 0; i < Nx; i++)
 	{
 		for(j = 0; j < Ny; j++)
 		{
 			for(k = 0; k < Nz; k++)
 			{
-				dist = pow((double)(pow(i-Nx/2.0,2) + pow(j-Ny/2.0,2) + pow(k-Nz/2.0,2)), 1/2.0)*delta;
+				dist = pow((pow(i-10-CtNx,2) + pow(j-CtNy,2) + pow(k-CtNz,2)), 0.5)*delta;
 				if(dist < R && dist > r)
 				{
 					Point[i][j][k].potential = 1;
-					Point[i][j][k].potentialFix = 1;
-				}
-				else if(dist >= 899e-6)
-				{
-					Point[i][j][k].potential = 0;
 					Point[i][j][k].potentialFix = 1;
 				}
 			}
