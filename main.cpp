@@ -19,6 +19,7 @@
 #include "mypara.h"
 #include "Point.h"
 #include "boundary.h"
+#include "BoundModify.cpp"
 
 using namespace std;
 
@@ -101,10 +102,13 @@ void commander()    //to determin whether the program can stop, and chane the om
 
 	int i, CountAccept = 0;
 	double MaxError = 0;
-	omega = 2/(1+3.14159/Nx);
+	omega = 2/(1+Pi/Nx);
+	double BoundE = 0;
+	bool IsBoundMod = 1;
+	int WAIT = 20;
 	while(1)
 	{
-		sleep(15);
+		sleep(WAIT);
 		MaxError = 0;
 
 		for(i = 0; i < ThreadNum; i++)
@@ -120,23 +124,34 @@ void commander()    //to determin whether the program can stop, and chane the om
 //		if(c%8==0)
 		printf("err: %e %e\n",MaxError, omega);
 
-		if(MaxError < MAXERR)    //converged
+		if(MaxError < MAXERR)
 		{
-			CountAccept++;
-			printf("CountAccept %d\n",CountAccept);
-			if(CountAccept > 14)
+			BoundE = ModifyBound(Point);
+			if(BoundE < BOUNDERR)
+			{
+				CountAccept++;
+				printf("CountAccept %d; BE %e\n", CountAccept, BoundE);
+			}
+			else
+			{
+				printf("BE %e\n", BoundE);
+			}
+			if(CountAccept == 1)
+			{
+				MAXERR = MAXERR2;    //smaller error
+				WAIT = 40;
+			}
+			if(CountAccept > 5)
 			{
 				omega = 1;
-			}
-			if(CountAccept > 22)
-			{
-				printf("TER\n");
 				break;
 			}
 			continue;
 		}
 		CountAccept = 0;
 	}
+	printf("WAIT ANOTHER 120 SECONDS TO TERMINATE\n");
+	sleep(120);
 	run = 0;
 }
 
